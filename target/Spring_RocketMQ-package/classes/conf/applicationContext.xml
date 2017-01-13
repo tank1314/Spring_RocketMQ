@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd"
+	default-autowire="byName">
+
+	<context:property-placeholder location="classpath:properties/config.properties" />
+
+
+	<!-- 使用annotation 自动注册bean,并检查@Required,@Autowired的属性已被注入 -->
+	<context:component-scan base-package="com.vstaryw.mq">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+
+	<bean id="producer" class="com.vstaryw.mq.producer.Producer" init-method="init" destroy-method="destroy" >
+		<property name="producerGroup" value="${producer.producerGroup}" />
+		<property name="namesrvAddr" value="${producer.namesrvAddr}"/>
+		<property name="producerInstanceName" value="${producer.producerInstanceName}" />
+	</bean>
+
+	<bean id="consumer" class="com.vstaryw.mq.consumer.Consumer" init-method="init" destroy-method="destroy">
+		<property name="consumerGroup" value="${consumer.consumerGroup}" />
+		<property name="namesrvAddr" value="${consumer.namesrvAddr}"/>
+		<property name="consumerInstanceName" value="${consumer.consumerInstanceName}" />
+		<property name="subsciption" value="${mq.subsciption}" />
+		<property name="taskHandler" ref="taskHandler"/>
+	</bean>
+
+
+	<import resource="spring-message-task.xml" />
+</beans>
